@@ -95,15 +95,43 @@ var createTaskActions = function(taskId){
 formEl.addEventListener("submit", taskFormHandler) //this allows the event listener to respond to the "submit" button being clicked, or the "Enter Key" being clicked
 
 var taskButtonHandler = function(event){
-    console.log(event.target);
+    //get target element from event
+    var targetEl = event.target;
 
-    if (event.target.matches(".delete-btn")) { //if the click event has a class of ".delete-btn", do this:
+    //edit button was clicked
+    if (targetEl.matches(".edit-btn")){//if the click event has a class of ".edit-btn", do this:
+        var taskId = targetEl.getAttribute("data-task-id"); // store attribute of "data-task-id" to variable
+        editTask(taskId); //perform function passing over the "taskId" value
+    }
+
+    //delete button was clicked
+    if (targetEl.matches(".delete-btn")) { //if the click event has a class of ".delete-btn", do this:
     //get the element's task id
-    var taskId = event.target.getAttribute("data-task-id");    
-    deleteTask(taskId);
+    var taskId = event.target.getAttribute("data-task-id"); //store attribute of "data-task-id" to variable
+    deleteTask(taskId); //perform function passing over the "taskId" value
     }
 }
+//function handle the editing of a task
+var editTask = function(taskId){
+    //get task list item element
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
 
+    // get content from task name
+    var taskName = taskSelected.querySelector("h3.task-name").textContent;
+
+    //get content from task type
+    var taskType = taskSelected.querySelector("span.task-type").textContent;
+
+    //show text in form so as to edit
+    document.querySelector("input[name='task-name']").value = taskName; //update the "input" element to show a value from "taskName"
+    document.querySelector("select[name='task-type']").value = taskType; //update the "select" element to show a value from "taskType"
+    document.querySelector("#save-task").textContent = "Save Task"; //update "#save-task" button to show textContent "Save Task"
+
+    //set ID for element to be edited
+    formEl.setAttribute("data-task-id", taskId);
+}
+
+//function handles the deletion of a task
 var deleteTask = function(taskId) {
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']"); //locate an element with the class of ".task-item" and a "data-task-id" that matches the "taskId" and save it to a variable
     taskSelected.remove();
