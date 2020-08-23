@@ -1,6 +1,7 @@
 var formEl = document.querySelector("#task-form"); //stores query for form in formEl
 var tasksToDoEl = document.querySelector("#tasks-to-do"); //save query for "#tasks-to-do" to a variable
 var taskIdCounter = 0; //variable to store unique IDs for each task
+var pageContentEl = document.querySelector("#page-content");
 
 var taskFormHandler = function() {
     event.preventDefault(); //prevents the browser from refreshing after button click
@@ -92,3 +93,19 @@ var createTaskActions = function(taskId){
 }
 
 formEl.addEventListener("submit", taskFormHandler) //this allows the event listener to respond to the "submit" button being clicked, or the "Enter Key" being clicked
+
+var taskButtonHandler = function(event){
+    console.log(event.target);
+
+    if (event.target.matches(".delete-btn")) { //if the click event has a class of ".delete-btn", do this:
+    //get the element's task id
+    var taskId = event.target.getAttribute("data-task-id");    
+    deleteTask(taskId);
+    }
+}
+
+var deleteTask = function(taskId) {
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']"); //locate an element with the class of ".task-item" and a "data-task-id" that matches the "taskId" and save it to a variable
+    taskSelected.remove();
+}
+pageContentEl.addEventListener("click", taskButtonHandler);
