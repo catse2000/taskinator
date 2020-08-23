@@ -16,14 +16,25 @@ var taskFormHandler = function() {
 
     formEl.reset(); //resets the form after submission
 
-    //package up data as an object
-    var taskDataObj = {
-        name: taskNameInput, 
-        type: taskTypeInput
-    };
+    var isEdit = formEl.hasAttribute("data-task-id"); //stores false/true of "data-task-id" attribute from form (in other words, does formEL have an attribute of data-task-id?)
+    
+    // has data attribute, so get task id and call function to complete edit process
+    if (isEdit){ //if isEdit is true
+        var taskId = formEl.getAttribute("data-task-id"); //get the stored attribute of "data-task-id" in the form and store in taskId
+        completeEditTask(taskNameInput, taskTypeInput, taskId); //call function completeEditTask() and pass three variables (Task Name, Taske Type, and Task ID);
+    }
+    //no data attribute, so create object as normal and pass to createTaskEl function
+    else{
+        //package up data as an object
+        var taskDataObj = {
+            name: taskNameInput, 
+            type: taskTypeInput
+        };
+    
+        // send it as an argument to createTaskEl
+        createTaskEl(taskDataObj);
+    }
 
-    // send it as an argument to createTaskEl
-    createTaskEl(taskDataObj);
 }
 
 var createTaskEl = function(taskDataObj){
@@ -129,6 +140,20 @@ var editTask = function(taskId){
 
     //set ID for element to be edited
     formEl.setAttribute("data-task-id", taskId);
+}
+
+var completeEditTask = function(taskName, taskType, taskId){
+    //find the matching task list item
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+    // set new values
+    taskSelected.querySelector("h3.task-name").textContent = taskName;
+    taskSelected.querySelector("span.task-type").textContent = taskType;
+
+    alert("Task Updated!");
+
+    formEl.removeAttribute("data-task-id"); //remove data-task-id attribute so there's no confusion when creating new tasks
+    document.querySelector("#save-task").textContent = "Add Task"; //change textContent of #save-task button to "Add Task"
 }
 
 //function handles the deletion of a task
