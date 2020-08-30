@@ -204,6 +204,7 @@ var dropZoneDragHandler = function(event){
     var taskListEl = event.target.closest(".task-list"); //look for element that is a child of, or is the target
     if (taskListEl) {
         event.preventDefault(); //prevent "dragover" default
+        taskListEl.setAttribute("style", "background: rgba(68, 233, 255, 0.7); border-style:dashed;"); //change style of list when element is dragged over it
     }
 }
 
@@ -227,7 +228,16 @@ var dropTaskHandler = function(event){
         statusSelectEl.selectedIndex = 2;
     }
 
+    dropZoneEl.removeAttribute("style"); //remove styling added in dropZoneDragHandler once item has been dropped
     dropZoneEl.appendChild(draggableElement);
+};
+
+//handles actions when dragging an object is done
+var dragLeaveHandler = function(event){
+    var taskListEl = event.target.closest(".task-list");
+    if (taskListEl) {
+        taskListEl.removeAttribute("style");
+    }
 };
 
 pageContentEl.addEventListener("click", taskButtonHandler);
@@ -235,3 +245,4 @@ pageContentEl.addEventListener("change", taskStatusChangeHandler);
 pageContentEl.addEventListener("dragstart", dragTaskHandler);
 pageContentEl.addEventListener("dragover", dropZoneDragHandler);
 pageContentEl.addEventListener("drop", dropTaskHandler);
+pageContentEl.addEventListener("dragleave", dragLeaveHandler);
