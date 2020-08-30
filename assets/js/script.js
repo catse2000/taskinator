@@ -65,7 +65,8 @@ var createTaskEl = function(taskDataObj){
 
     taskDataObj.id = taskIdCounter;
     tasks.push(taskDataObj);
-    console.log(taskDataObj);
+
+    saveTasks(); //call function to save any changes to the task
 
     var taskActionsEl = createTaskActions(taskIdCounter); //store value from taskIdCounter
     listItemEl.appendChild(taskActionsEl);
@@ -171,6 +172,9 @@ var completeEditTask = function(taskName, taskType, taskId){
             tasks[i].type = taskType;
         }
     }
+
+    saveTasks(); //call function to save any changes to the task
+
     alert("Task Updated!");
 
     formEl.removeAttribute("data-task-id"); //remove data-task-id attribute so there's no confusion when creating new tasks
@@ -195,6 +199,8 @@ var deleteTask = function(taskId) {
 
     //reassign tasks arrray to be the same as updatedTaskArr
     tasks = updatedTaskArr;
+
+    saveTasks(); //call function to save any changes to the task
 };
 
 //function handles the change of the type of task
@@ -224,6 +230,8 @@ var taskStatusChangeHandler = function (event){
             tasks[i].status = statusValue;
         }
     }
+
+    saveTasks(); //call function to save any changes to the task
 };
 
 //handler for dragging tasks
@@ -264,6 +272,8 @@ var dropTaskHandler = function(event){
 
     dropZoneEl.removeAttribute("style"); //remove styling added in dropZoneDragHandler once item has been dropped
     dropZoneEl.appendChild(draggableElement);
+
+    saveTasks(); //call function to save any changes to the task
 };
 
 //handles actions when dragging an object is done
@@ -272,6 +282,10 @@ var dragLeaveHandler = function(event){
     if (taskListEl) {
         taskListEl.removeAttribute("style");
     }
+};
+
+var saveTasks = function(){
+    localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
 pageContentEl.addEventListener("click", taskButtonHandler);
