@@ -1,10 +1,11 @@
 var formEl = document.querySelector("#task-form"); //stores query for form in formEl
-var tasksToDoEl = document.querySelector("#tasks-to-do"); //save query for "#tasks-to-do" to a variable
+var tasksToDoEl = document.querySelector("#tasks-to-do"); //save query for "#tasks-to-do" to a variable (ul)
 var taskIdCounter = 0; //variable to store unique IDs for each task
-var pageContentEl = document.querySelector("#page-content");
-var tasksInProgressEl = document.querySelector("#tasks-in-progress");
-var tasksCompletedEl = document.querySelector("#tasks-completed");
+var pageContentEl = document.querySelector("#page-content"); //main
+var tasksInProgressEl = document.querySelector("#tasks-in-progress"); //ul
+var tasksCompletedEl = document.querySelector("#tasks-completed"); //ul
 
+// handles tasks from from
 var taskFormHandler = function() {
     event.preventDefault(); //prevents the browser from refreshing after button click
     var taskNameInput = document.querySelector("input[name='task-name']").value;
@@ -39,6 +40,7 @@ var taskFormHandler = function() {
 
 }
 
+// creates tasks
 var createTaskEl = function(taskDataObj){
     // create list item
     var listItemEl = document.createElement("li"); //stores the ability to create "li" in a variable
@@ -46,6 +48,9 @@ var createTaskEl = function(taskDataObj){
 
     // add task id as a custom attribute
     listItemEl.setAttribute("data-task-id", taskIdCounter);
+
+    //add draggable feature
+    listItemEl.setAttribute("draggable", "true");
 
     //create div to hold task info and add to list item
     var taskInfoEl = document.createElement("div");
@@ -64,6 +69,7 @@ var createTaskEl = function(taskDataObj){
     //increase task counter for next unique id
     taskIdCounter++;
 }
+
 
 var createTaskActions = function(taskId){
     var actionContainerEl = document.createElement("div"); //create element "div"
@@ -186,6 +192,46 @@ var taskStatusChangeHandler = function (event){
     }
 };
 
+//handler for dragging tasks
+var dragTaskHandler = function(){
+    var taskId = event.target.getAttribute("data-task-id");
+    event.dataTransfer.setData("text/plain", taskId); //store data in dataTransfer property in drag event
+    var getId = event.dataTransfer.getData("text/plain");
+};
+
+//handler for identify the drop zone and preventing default with "dragover"
+var dropZoneDragHandler = function(event){
+    var taskListEl = event.target.closest(".task-list"); //look for element that is a child of, or is the target
+    if (taskListEl) {
+        event.preventDefault(); //prevent "dragover" default
+    }
+}
+
+//handler for dropping the task into a new area
+var dropTaskHandler = function(event){
+    var id = event.dataTransfer.getData("text/plain");
+    var draggableElement = document.querySelector("[data-task-id='" + id + "']");
+    var dropZoneEl = event.target.closest(".task-list");
+    var statusType = dropZoneEl.id;
+
+    //set status of task based on dropZone id
+    var statusSelectEl = draggableElement.querySelector("select[name='status-change']");
+    
+    if (statusType === "tasks-to-do"){
+        statusSelectEl.selectedIndex = 0;
+    }
+    else if(statusType === "tasks-in-progress"){
+        statusSelectEl.selectedIndex = 1;
+    }
+    else if (statusType === "tasks-completed"){
+        statusSelectEl.selectedIndex = 2;
+    }
+
+    dropZoneEl.appendChild(draggableElement);
+};
 
 pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+pageContentEl.addEventListener("dragstart", dragTaskHandler);
+pageContentEl.addEventListener("dragover", dropZoneDragHandler);
+pageContentEl.addEventListener("drop", dropTaskHandler);
